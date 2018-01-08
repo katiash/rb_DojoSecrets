@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DojoSecrets</title>
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+    <!-- DISPLAY ANY ERRORS VIA FLASH ON ANY VIEW AT ANY POINT IN TIME, IF EXIST -->
+    <% if flash[:errors]%>
+      <%flash[:errors].each do |e|%>
+        <%=e%>
+      <%end%>
+    <%end%>
+    
+    <!-- The "current_user" helper_method in action! -->
+    <% if current_user %>
+    
+    <!-- Can call current_user in this way in our Views now: -->
+    <h1>Welcome, <%=current_user.name%></h1>
+    @secrets = current_user.secrets
+    
+      <form action="/sessions/<%=current_user.id%>" method="post">
+        <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
+        <input type="hidden" name="_method" value="delete">
+        <input type="submit" value="Log Out">
+      </form>
+    <%end%>
+
+    <%= yield %>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+class User < ActiveRecord::Base
+  has_many :secrets
+  # DESTROYS THE RELATIONSHIP RECORD AND ASSOCIATED/DEPENDENT MODEL RECORDS
+  has_many :likes, dependent: :destroy 
+  has_many :secrets_liked, through: :likes, source: :secret
+
+  has_secure_password
+  # before_validation :normalize_email, on: [:create, :update]
+  # CHANGE TO "before_validation" later on, to validate against same in DB!!!
+  before_save :normalize_email, on: [:create, :update]
+
+  private
+    def normalize_email
+      self.email = email.downcase
+    end
+end
+
+# BCrypt Built-In Validations :
+# =============================
+# - password required only on create not on update
+# - password length should be less than or equal to 72 characters
+# - Confirmation of password (using a password_confirmation attribute)
+# 
+# Attributes:
+# ===========
+# Even though the columns aren't present in our database,
+# BCrypt adds the following attributes to our User instance: 
+# * password: We can update our password by manipulating this attribute and saving.
+# * password_confirmation: This field must match our password field.
+
+# Methods:
+# ========
+# BCrypt provides us with an authenticate method (takes in one (1) parameter):
+  # a) If the parameter matches the password of the user, 
+  # then the method returns the *user* being authenticated,
+  # b) If it doesn't match it will return false. We will be using this method when we log a user in.
+
+# CALLBACKS EXAMPLE:
+# ==================
+# validates :login, :email, presence: true 
+# before_validation :ensure_login_has_a_value
+ 
+# private
+#   def ensure_login_has_a_value
+#     if login.nil?
+#       self.login = email unless email.blank?
+#     end
+#   end
+# end
+
+# 3.1 Creating an Object
+# before_validation
+# after_validation
+# before_save
+# around_save
+# before_create
+# around_create
+# after_create
+# after_save
+# after_commit/after_rollback
+
+# 3.2 Updating an Object
+# before_validation
+# after_validation
+# before_save
+# around_save
+# before_update
+# around_update
+# after_update
+# after_save
+# after_commit/after_rollback
+
+# 3.3 Destroying an Object
+# before_destroy
+# around_destroy
+# after_destroy
+# after_commit/after_rollback
+
+# 'after_save' runs both on 'create' and 'update', 
+# but always after the more specific callbacks after_create and after_update, 
+# no matter the order in which the macro calls were executed.
+
+
+# DEBUGGING CALLBACKS:
+# ======================
+# The callback chain is accessible via the _*_callbacks method on an object. 
+
+# Active Model Callbacks support:
+# :before, :after and :around, as values for the kind property:
+# the *kind* property defines what part of the chain the callback runs in.
+
+# EXAMPLE:
+# ========
+# 1. To find all callbacks in the "before_save" callback chain:
+
+#  Topic._save_callbacks.select { |cb| cb.kind.eql?(:before) }
+
+# => Returns an array of callback objects that form the before_save chain.
+
+# 2. To further check if the "before_save" chain contains a proc defined as:
+# "rest_when_dead", use the "filter" property of the callback object:
+
+#   Topic._save_callbacks.select { |cb| cb.kind.eql?(:before) }.collect(&:filter).include?(:rest_when_dead)
+
+# => Returns true or false, depending on whether the proc is contained in the "before_save" callback chain on a 
+# Topic model.
