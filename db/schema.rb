@@ -35,6 +35,8 @@ ActiveRecord::Schema.define(version: 20180108031644) do
 
   add_index "secrets", ["user_id"], name: "index_secrets_on_user_id", using: :btree
 
+  # Use Bcrypt for password: 
+  # rails g model User name:string email:string password:digest
   create_table "users", force: :cascade do |t|
     t.string   "name"
     t.string   "email"
@@ -43,7 +45,8 @@ ActiveRecord::Schema.define(version: 20180108031644) do
     t.datetime "updated_at",      null: false
   end
 
+  add_foreign_key "secrets", "users"
   add_foreign_key "likes", "secrets"
   add_foreign_key "likes", "users"
-  add_foreign_key "secrets", "users"
+
 end

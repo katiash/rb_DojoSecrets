@@ -42,7 +42,12 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'factory_girl_rails'
   gem 'capybara'
-
+  gem 'rails-footnotes', '>=4.0.0','<5' 
+  # RUN AFTER BUNDLE INSTALL: rails generate rails_footnotes:install
+  # Once you start the rails server (rails s in the terminal, or 
+  # rails s -b 0.0.0.0 if you are using vagrant), you'll see extra information
+  # on the bottom to help you with the debugging process.
+  
 end
 
 group :development do

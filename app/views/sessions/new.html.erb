@@ -1,2 +1,28 @@
-<h1>Sessions#new</h1>
-<p>Find me in app/views/sessions/new.html.erb</p>
+<% content_for :title, "A Web Page - Login Page"%>
+
+<div style = "padding: 20px">
+  <a href="/users/new">  Register </a> | 
+  <button> <a href="/users/new">  Register </a></button> <br><br>
+  <%= button_to "Register", users_new_path, method: :get, data: { confirm: "Are you sure?" }%>
+  
+  <br><br>
+
+  <label for="login_form"><strong> Login:</strong> </label>
+  <form action='/sessions/' method='post' id="login_form" style="border: 1px solid black; width: 300px; padding: 20px">
+    <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
+    <label for="email"> Email: </label>
+    <input type='text' id="email" name='user[email]' >
+    <br>
+    <label for="password"> Password: </label>
+    <input type='password' id="password" name='user[password]'>
+    <br>
+    <input type='submit' name='submit' value='Login'>
+  </form>
+</div>
+
+
+<%#= form_tag("/search", :method => "get") do %>
+  <%#= label_tag(:q, "Search for:") %>
+  <%#= text_field_tag(:q) %>
+  <%#= submit_tag("Search") %>
+<%# end %>

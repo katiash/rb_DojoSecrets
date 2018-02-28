@@ -6,8 +6,15 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
 
+  # Added to avoid additional unwanted warnings related to below IP:
+  #################################################
+  config.web_console.whitelisted_ips = '10.0.2.2' 
+  # config.web_console.whiny_requests = false
+
+  # Can also simply switch below to false:
   # Do not eager load code on boot.
-  config.eager_load = false
+  # config.eager_load = false
+  #################################################
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
@@ -38,4 +45,7 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # Simplifying messages in the console (from platform - Rails: Controller III tab):
+  config.log_level = :warn
 end

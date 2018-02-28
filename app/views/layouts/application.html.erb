@@ -1,33 +1,72 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DojoSecrets</title>
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+    <%#<title>DojoSecrets</title>%>
+    <title><%= yield :title %></title>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-    <%= csrf_meta_tags %>
+    <%= csrf_meta_tags %>    
+    <!-- Dynamically add some Javascript -->
+    <script type="text/javascript">
+        <%= yield :some_javascript %>
+    </script>  
   </head>
-  <body>
-    <!-- DISPLAY ANY ERRORS VIA FLASH ON ANY VIEW AT ANY POINT IN TIME, IF EXIST -->
-    <% if flash[:errors]%>
-      <%flash[:errors].each do |e|%>
-        <%=e%>
-      <%end%>
-    <%end%>
-    
-    <!-- The "current_user" helper_method in action! -->
-    <% if current_user %>
-    
-    <!-- Can call current_user in this way in our Views now: -->
-    <h1>Welcome, <%=current_user.name%></h1>
-    @secrets = current_user.secrets
-    
-      <form action="/sessions/<%=current_user.id%>" method="post">
-        <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
-        <input type="hidden" name="_method" value="delete">
-        <input type="submit" value="Log Out">
-      </form>
-    <%end%>
+  
+  <!-- rendering the header partial from another "shared" folder. Notice the omission of the underscore -->
+  <%= render "shared/header" %>
+  <!-- rendering the params_display partial from another "shared" folder. Notice the omission of the underscore -->
+  <%= render "shared/params_display"%>
 
-    <%= yield %>
+
+  <body>
+    <%# flash ERRORS & NOTICE LOOPS: %>
+    <%# ===========================================================================================
+    <%# IN Student_Dashboard, we used the Errors object and Pluralize to Display errors one-by-one%>
+    <%# Here, we DISPLAY errors VIA flash ON all the VIEWS, IF errors EXIST %>
+
+    <%# Use .blank? to check for nil and empty:
+          @search.blank?
+    <%# For the opposite case (NOT nil or empty), use .present? :
+          @search.present? #equivalent of !@search.blank?
+    <%# === END === %>
+
+    <div style="margin: 20px; color: cyan">
+      <%if flash[:errors].present?%>
+        <%flash[:errors].each do |e|%>
+          <%= e %>
+        <%end%>
+      <%end%>
+      <% if flash[:notice].present?%>
+        <%flash[:notice].each do |n|%>
+          <%= n %>
+        <%end%>
+      <%end%>
+    <%# ===========================================================================================%>
+      <div style = "margin-left: 640px "> 
+      <!--Can call current_user in ALL Views (and controllers) now: -->
+      <%# <h1>Welcome, <%=current_user.name _></h1> %>
+      <!--Can display other info about current_user-->
+      <!--@secrets = current_user.secrets-->
+      <!-- The "current_user" helper_method in action! -->
+        <% if current_user %> <%# ...exists: %>    
+          <form action="/sessions/<%=current_user.id%>" method="post">
+            <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
+            <input type="hidden" name="_method" value="delete">
+            <input type="submit" value="Log Out">
+          </form>
+        <%end%>
+      </div><%# ======== end login button============================================================%>
+    </div><%# ======end flash ERROR & NOTICE displays=============================================================%>
+    
+    <%# THE FOLLOWING IS HOW TO PRINT TO SERVER TERMINAL FROM LAYOUT/VIEW (.ERB) FILE %>
+    <% puts "I am printing from application html layout file (views/layouts)." %> 
+  
+    <%# YIELDS ALL THE OTHER CONTROLLER VIEWS HERE:%>
+    <%# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ %>
+    <%=yield %>
+    <%# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ %>
   </body>
+
+  <!-- rendering the footer partial from another folder. -->
+  <%= render "shared/footer"%>
 </html>

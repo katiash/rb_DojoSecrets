@@ -1,2 +1,86 @@
-<h1>User#show</h1>
-<p>Find me in app/views/user/show.html.erb</p>
+<%content_for :title, "A Web Page - User Page"%>
+
+<%#content_for :some_javascript do _> alert("Welcome Back!"); 
+<%#end%>
+
+<div style = "padding: 20px">
+    <p style = "margin-left: 720px;"><%=link_to "Home - Secrets Page", secrets_index_path%></p>
+    <h4><%=current_user.name%></h4>
+
+    <%# CREATE SECRET FORM(S)%>
+    <%# ####################=%>
+    <%# 1ST APPROACH: %>  
+    <%# ==============%>
+    <%# NOTE: 2nd parameter for f.label allows to set "custom" label text %>
+    <%# EXAMPLE: f.label :name, 'Your Name', where "Your Name" is "custom" label text %>
+    <%# -------------------------------------------------------------------------------------------------%>
+    <%=form_for @secret, :url => { :controller => "secrets", :action => "create" , method: :post } do |f|%>
+        <%=f.label :content , 'New Secret' %>
+        <br>
+        <%=f.text_area :content, size: "60x12" %>
+        <br><br>
+        <%=f.submit "Create Secret"%>
+    <%end%>
+
+    <%# 2ND APPROACH: %>
+    <%# ==============%>
+    <%# NOTE: form_for used for objects on an existing model %>
+    <%# ---------------------------------------------------------------%>
+    <%#=form_for @secret, :url => secrets_path, :method => :post do |f|%>
+        <%#=f.label :content , 'New Secret' %>
+        <%#=f.text_area :content, size: "60x12" %>
+        <%#=f.submit "Create Secret"%>
+    <%#end%>
+
+    <%# 3RD APPROACH: %>
+    <%# ===============%>
+    <%# NOTE: form_tag used for local objects (which you can also pass to this view from controller as below)  %>
+    <%# PASSING LOCALS TO VIEW/PARTIAL: render :partial => '/shared/instances_new', :locals=>{:new_instance => @new_instance} %>
+    <%# -------------------------------------------%>
+    <%#=form_tag("/secrets/", :method => "post") do%>
+        <%#= label_tag(:content, "New Secret")%>
+        <%#= text_area_tag(:content)%>
+        <%#= submit_tag("Create Secret")%>
+    <%#end%>
+
+
+    <!--OTHER INFO ABOUT THIS USER BELOW-->
+
+    <%#in proces of drafting below routes...%>
+    <%#= button_to 'Create Secret', method: :post, controller: "secrets", action: "create", data: { confirm: "Are you sure?" } %>
+
+    <div style = "margin-left: 0px; margin-top: 20px;">
+        <div style =  "display: inline-block; margin-left: 0px; margin-top: 20px; padding: 10px; width: 430px; border: 1px solid black">
+            <h4>Secrets</h4>
+            <%if @user_secrets.present?%>
+                <% @user_secrets.each do |s|%>
+                    <%= s.content%><br>
+                    <i><%= s.likes.count%> likes</i>
+                    <% if current_user == s.user %>
+                        <form action= "/secrets/<%=s.id%>" method='post'>
+                            <input type="hidden" name="authenticity_token" value="form_authenticity_token"> 
+                            <input type="hidden" name="_method" value="delete">                
+                            <input type="submit" name="commit" value="Destroy">
+                        </form>
+                    <%end%>
+                <%end%>
+            <%else%>
+                <p> You have no secrets yet. C'mon, add some secrets! </p>
+            <%end%>
+        </div>
+
+        <div style = "display: inline-block; vertical-align: top; margin-left: 0px; margin-top: 20px; padding: 10px; width: 400px; border: 1px solid black">
+            <h4>Secrets Liked</h4>
+            <%if @secrets_liked.blank?%>
+                <p> You have not Liked any secrets yet. C'mon, go and Like some secrets! </p>
+            <%else%>
+                <% @secrets_liked.each do |secret| %>
+                    <%= secret.content %><br>
+                    <%= secret.likes.count%> likes
+                    <br><br>
+                <% end %>
+            <%end%>
+        </div>
+        <br>
+    </div>
+</div>

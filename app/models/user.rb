@@ -1,30 +1,51 @@
 class User < ActiveRecord::Base
-  has_many :secrets
-  # DESTROYS THE RELATIONSHIP RECORD AND ASSOCIATED/DEPENDENT MODEL RECORDS
-  has_many :likes, dependent: :destroy 
-  has_many :secrets_liked, through: :likes, source: :secret
+  # :dependent - Controls what happens to the associated objects when their owner is destroyed:
+  # :destroy - causes all the associated objects to also be destroyed (i.e. DESTROYS THE 
+  #            RELATIONSHIP RECORD AND ASSOCIATED/DEPENDENT MODEL RECORDS 4.3.2.5)
+  # :delete_all - causes all the associated objects to be deleted directly from the database 
+  # (so callbacks will not execute)
+  # :nullify - causes the Foreign Keys to be set to NULL. 'Save' callbacks are not executed.
+  # :restrict_with_exception - causes an exception to be raised if there are any associated records
+  # :restrict_with_error - causes an error to be added to the owner if there are any associated objects
+  
+  EMAIL_REGEX = /\A@\z/i
+  
+  has_many :secrets #USER is 'owner' of Secrets
+  
+  has_many :likes, dependent: :destroy   #USER is 'owner' of Likes
+  has_many :secrets_liked, through: :likes, source: :secret #Users's Secrets which he/she "liked"
 
+  # BCRYPT method - adds validations, methods, attributes to User Instance:
   has_secure_password
-  # before_validation :normalize_email, on: [:create, :update]
-  # CHANGE TO "before_validation" later on, to validate against same in DB!!!
+
+  # VALIDATIONS:
+  validates :name, :email, presence: true
+
+  # before_validate :normalize_email
+  validates :email, :uniqueness=> true, :format => /@/   # OR....
+  
+  # validates :email, :uniqueness=> true, :format => {with: EMAIL_REGEX, message: "is invalid"}
   before_save :normalize_email, on: [:create, :update]
 
   private
     def normalize_email
+      puts "Initially: ", self.email, email
       self.email = email.downcase
+      puts "After: ", self.email, email, email.downcase
+      # or self.email.downcase!
     end
 end
 
 # BCrypt Built-In Validations :
 # =============================
-# - password required only on create not on update
+# - password required only on create, not on update
 # - password length should be less than or equal to 72 characters
 # - Confirmation of password (using a password_confirmation attribute)
 # 
 # Attributes:
 # ===========
 # Even though the columns aren't present in our database,
-# BCrypt adds the following attributes to our User instance: 
+# BCrypt adds the following attributes to a User instance: 
 # * password: We can update our password by manipulating this attribute and saving.
 # * password_confirmation: This field must match our password field.
 

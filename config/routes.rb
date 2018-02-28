@@ -1,17 +1,46 @@
 Rails.application.routes.draw do
-  get 'likes/create'
+# Root:
+  root "sessions#new"
+  
+  get 'sessions/new' => "sessions#new"  #template
+  post 'sessions/' => "sessions#create"
+  delete 'sessions/:user_id' => "sessions#destroy"
 
-  get 'likes/destroy'
+  post 'likes' => "likes#create"
+  delete 'likes' =>"likes#destroy", as: 'likes_path'
 
-  get 'secrets/index'
+  get 'users/new' => "user#new" #template
+  match 'users/:user_id' => "user#show", via: ['get'], as: 'user' # template: shows form for new secret
+  post 'users/', to: "user#create"
 
-  get 'user/new'
+  get 'secrets' => 'secrets#index' #re-route to secrets/index view
+  get 'secrets/index' => "secrets#index" #template: all secrets 'show'
+  delete 'secrets/:secret_id' => "secrets#destroy"  #if owner ONLY
+  post 'secrets/' => "secrets#create"
 
-  get 'user/show'
+  # Route Globbing:
+  #match "*reset"=> redirect("/",  status: 302), via: [:all], as: 'glob', constraints: -> (req) { !(req.fullpath =~ /^\/rails\/.*/)}
+  
+  ## students controller:
+  # resources :dojos, only: [:show] do
+  #   resources :students, except: [:index, :create], controller: 'dojos/students'
+  # end 
+  # post 'students', to: 'dojos/students#create'
+  # get '/dojos/:dojo_id/student/:id', to: 'dojos/students#profile'
 
-  get 'user/edit'
+  # CREATING CUSTOM URL HELPER (have to use "match"):
+  # match 'surveys/result(/:id)' => "surveys#result", via: [:get], as: 'surveys_result'
 
-  get 'sessions/new'
+  # get 'surveys/result' => 'surveys#result', :your_name => 'Your name', :dojo_loc => 'Mountain View, CA', :fave_lang => 'Python', :comment => 'No comment here...'
+  # root 'surveys#index'
+  # match "/:ind" => redirect("surveys/index"), via: [:all], constraints: { ind: /[a-z]+/ }
+  
+  # SEEMS LIKE FOLLOWING USED TO BE TRUE back in 2012:
+  # match "/*id" => "pages#show", constraints: { id: /company/ } # doesn't work
+  # match "/*id" => "pages#show", id: /company/ # does work
+  
+  # match "*path" => redirect("/", status: 301), via: [:all]
+  # match "*path" to: redirect("/", status: 301), via: [:all]
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
